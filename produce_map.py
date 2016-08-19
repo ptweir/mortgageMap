@@ -123,12 +123,13 @@ groups = tree.findall('.//{%s}g' % SVG_NS)
 
 for group in groups:
     if group.get('id') == 'county-group':
-        country_group = group
+        county_group = group
 all_fracs = []
-    
-county_paths = country_group.findall('.//{%s}path' % SVG_NS)
+children = []
+county_paths = county_group.findall('.//{%s}path' % SVG_NS)
 for county_path in county_paths:
-    county_name = county_path.get('id').lower()
+    county_name_case = county_path.get('id')
+    county_name = county_name_case.lower()
     if occupancy_data.has_key(county_name):
         #print county_name
         county_class = county_path.get('class')
@@ -150,18 +151,26 @@ for county_path in county_paths:
     else:
         print 'no occupancy data', county_name
         
+    new_county_name = county_name.replace(' ', '_')
+    new_county_name = new_county_name.replace(',', '_')
+    county_path.set('id', new_county_name)
     county_path.set('style', 'fill:'+color_this_county+';fill-opacity:1')
-    #county_path.append(ET.Element('title', {'name': 'error'}))
-    #child = ET.Element('title')
-    #child.text = 'peter'
-    #if county_class is not None:
-        #begin_str = county_class+'.mouseover'
-        #end_str = county_class+".mouseout"
-        #child = ET.Element('text', {'x':"250", 'y':"100", 'font-size':"30", "fill":"black"})
-        #child.text='peter'
-        #gchild = ET.Element('set', {'attributeName': 'visibility', 'from':"hidden", 'to':"visible", 'begin':begin_str, 'end': end_str})
-        #child.append(gchild)
-        #county_path.append(child)
-
+    if county_class is not None:
+        county_x, county_y = county_path.get('d').split()[1].split(',')
+        county_x_rect = str(float(county_x)-10)
+        county_y_rect = str(float(county_y)-10)
+        g_el = ET.Element('ns0:g')
+        rect_el = ET.Element('ns0:rect', {"x":county_x_rect, "y":county_y_rect, "width":"350", "height":"20", "fill":"white", "visibility": "hidden"})
+        text_el = ET.Element('ns0:text', {"font-size":"10", "x":county_x, "y":county_y, "fill":"black", "visibility": "hidden"})
+        text_el.text = county_name_case + ' owner-occupied: ' + str(ownerocc) + ' Not owner-occupied: ' + str(notownerocc)
+        begin_str = new_county_name+".mouseover"
+        end_str = new_county_name+".mouseout"
+        set_el = ET.Element('ns0:set', {"attributeName":"visibility", "from":"hidden", "to":"visible", "begin":begin_str, "end":end_str})
+        rect_el.append(set_el)
+        text_el.append(set_el)
+        g_el.append(rect_el)
+        g_el.append(text_el)
+        children.append(g_el)
+county_group.extend(children)
 tree.write('mortgageMap.svg')
 
