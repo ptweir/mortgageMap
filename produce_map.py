@@ -170,7 +170,7 @@ for county_path in county_paths:
             if np.ceil(frac_this_county*10.) == 7:
                 lower_str = 'Less than '
             upper_str = str(int(np.ceil(frac_this_county*10.)*10)) +  '%'
-            title_el.text = lower_str + upper_str + ' owner occupied.'
+            title_el.text = lower_str + upper_str + ' owner-occupied.'
         county_path.append(title_el)
     elif county_class is not None:
         title_el = ET.Element('ns0:title')
