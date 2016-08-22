@@ -9,6 +9,14 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>mortgageMap</title>
+        <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-72213326-1', 'auto');
+  ga('send', 'pageview');
+</script>
   </head>
 
   <body>
@@ -17,6 +25,7 @@
     <div id="header_wrap" class="outer">
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/ptweir/mortgageMap">View on GitHub</a>
+          <a id="breadcrumbs_banner" href="http://ptweir.github.io/">ptweir home</a><a id="breadcrumbs_child" href="http://ptweir.github.io/mortgageMap/">mortgageMap</a>
 
           <h1 id="project_title">mortgageMap</h1>
           <h2 id="project_tagline">A map of owner-occupation for approved mortgage applications</h2>
@@ -32,10 +41,15 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h3>
-<a id="where-are-the-lowest-percentages-of-new-mortgages-owner-occupied" class="anchor" href="#where-are-the-lowest-percentages-of-new-mortgages-owner-occupied" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Where are the lowest percentages of new mortgages owner-occupied?</h3>
+<a id="owner-occupied" class="anchor" href="#owner-occupied" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fraction of new mortgages that are owner-occupied</h3>
+        <p>The Home Mortgage Disclosure Act requires financial institutions to publicly disclose information about mortgages.
+        I've used data from 2014 to produce the following map, which shows the fraction of approved mortgages by county that were owner-occupied.
+        We see that counties that are popular for second homes and vacations tend to have low rates of owner occupation (Hawaii, the Oregon coast).
+        Hover over the map with your map to see data for each county.</p>
       <iframe src="https://rawgit.com/ptweir/mortgageMap/master/mortgageMap.svg" width="1000" height="700">
         Your browser does not iframes
       </iframe>
+      <p id="credits">mortgageMap uses data collected by <a href="http://www.consumerfinance.gov" target="_blank">consumerfinance.gov</a>. The original .svg map of the US is from <a href="https://commons.wikimedia.org/wiki/File:Usa_counties_large.svg" target="_blank">Wikimedia Commons</a>.</p>
       </section>
     </div>
 
