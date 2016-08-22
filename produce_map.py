@@ -162,6 +162,7 @@ for county_path in county_paths:
         county_y_rect = str(float(county_y)-14)
         own_y = str(float(county_y)+15)
         notown_y = str(float(county_y)+30)
+        """
         g_el = ET.Element('ns0:g')
         #rect_el = ET.Element('ns0:rect', {"x":county_x_rect, "y":county_y_rect, "width":"350", "height":"20", "fill":"white", "visibility": "hidden"})
         rect_el = ET.Element('ns0:rect', {"x":county_x_rect, "y":county_y_rect, "width":"150", "height":"60", "fill":"white", "visibility": "hidden"})
@@ -192,7 +193,11 @@ for county_path in county_paths:
         g_el.append(text_el_county)
         g_el.append(text_el_own)
         g_el.append(text_el_notown)
-        children.append(g_el)
+        """
+        title_el = ET.Element('ns0:title')
+        title_el.text = county_name_case + '\n' + str(int(ownerocc)) + ' owner-occupied,\n' + str(int(notownerocc)) + ' Not owner-occupied.'
+        county_path.append(title_el)
+        #children.append(g_el)
 county_group.extend(children)
 tree.write('mortgageMap.svg')
 
