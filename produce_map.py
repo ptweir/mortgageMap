@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import numpy as np
 import csv
 
 def convert_frac_to_color(fr):
@@ -115,6 +116,11 @@ with open('hmda_lar.csv', 'rb') as csvfile:
                 occupancy_data[key] = {}
             occupancy_data[key][subkey] = num
 
+for rect_name_ind, rect_name in enumerate(["rect0" , "rect4", "rect3", "rect2", "rect1"]):
+    occupancy_data[rect_name] = {}
+    occupancy_data[rect_name]['ownocc'] = 70. + rect_name_ind*10. - int(rect_name_ind==0)*50
+    occupancy_data[rect_name]['notownocc'] = 50. - rect_name_ind*10. 
+
 tree = ET.ElementTree()
 tree.parse('./Usa_counties_large.svg')
 
@@ -143,7 +149,7 @@ for county_path in county_paths:
         else:
             notownerocc = 0
         frac_this_county = ownerocc/(ownerocc + notownerocc)
-        if (ownerocc + notownerocc) > 100:
+        if (ownerocc + notownerocc) >= 100:
             color_this_county = convert_frac_to_color(frac_this_county)
         else:
             color_this_county = '#ffffff'
@@ -155,49 +161,21 @@ for county_path in county_paths:
     new_county_name = new_county_name.replace(',', '_')
     county_path.set('id', new_county_name)
     county_path.set('style', 'fill:'+color_this_county+';fill-opacity:1')
-    if county_class is not None:
-        county_x, county_y = county_path.get('d').split()[1].split(',') # this creates a box near the county
-        county_x = str(float(county_x)+40)
-        county_x_rect = str(float(county_x)-10)
-        county_y_rect = str(float(county_y)-14)
-        own_y = str(float(county_y)+15)
-        notown_y = str(float(county_y)+30)
-        """
-        g_el = ET.Element('ns0:g')
-        #rect_el = ET.Element('ns0:rect', {"x":county_x_rect, "y":county_y_rect, "width":"350", "height":"20", "fill":"white", "visibility": "hidden"})
-        rect_el = ET.Element('ns0:rect', {"x":county_x_rect, "y":county_y_rect, "width":"150", "height":"60", "fill":"white", "visibility": "hidden"})
-        #text_el = ET.Element('ns0:text', {"font-size":"10", "x":county_x, "y":county_y, "fill":"black", "visibility": "hidden"})
-        #text_el.text = county_name_case + ': ' + str(int(ownerocc)) + ' owner-occupied, ' + str(int(notownerocc)) + ' Not owner-occupied.'
-        text_el_county = ET.Element('ns0:text', {"font-size":"10", "x":county_x, "y":county_y, "fill":"black", "visibility": "hidden"})
-        text_el_county.text = county_name_case
-        text_el_own = ET.Element('ns0:text', {"font-size":"10", "x":county_x, "y":own_y, "fill":"black", "visibility": "hidden"})
-        text_el_own.text = str(int(ownerocc)) + ' owner-occupied'
-        text_el_notown = ET.Element('ns0:text', {"font-size":"10", "x":county_x, "y":notown_y, "fill":"black", "visibility": "hidden"})
-        text_el_notown.text = str(int(notownerocc)) + ' Not owner-occupied.'
-        begin_str = new_county_name+".mousedown"
-        end_str = new_county_name+".mouseup"
-        set_el = ET.Element('ns0:set', {"attributeName":"visibility", "from":"hidden", "to":"visible", "begin":begin_str, "end":end_str})
-        #animate_el = ET.Element('ns0:animate', {"dur":"15", "attributeName":"opacity", "from":"1", "to":"0", "begin":end_str, "repeatCount":"0", "fill":"freeze"})
-        rect_el.append(set_el)
-        #text_el.append(set_el)
-        rect_el.append(animate_el)
-        #text_el.append(animate_el)
-        text_el_county.append(set_el)
-        #text_el_county.append(animate_el)
-        text_el_own.append(set_el)
-        #text_el_own.append(animate_el)
-        text_el_notown.append(set_el)
-        #text_el_notown.append(animate_el)
-        g_el.append(rect_el)
-        #g_el.append(text_el)
-        g_el.append(text_el_county)
-        g_el.append(text_el_own)
-        g_el.append(text_el_notown)
-        """
+    if county_class == "legendBox":
         title_el = ET.Element('ns0:title')
-        title_el.text = county_name_case + '\n' + str(int(ownerocc)) + ' owner-occupied,\n' + str(int(notownerocc)) + ' Not owner-occupied.'
+        if county_name == 'rect0':
+            title_el.text = 'Less than 100 new mortgages approved'
+        else:
+            lower_str = str(int(np.floor(frac_this_county*10.)*10)) + '% - '
+            if np.ceil(frac_this_county*10.) == 7:
+                lower_str = 'Less than '
+            upper_str = str(int(np.ceil(frac_this_county*10.)*10)) +  '%'
+            title_el.text = lower_str + upper_str + ' owner occupied.'
         county_path.append(title_el)
-        #children.append(g_el)
+    elif county_class is not None:
+        title_el = ET.Element('ns0:title')
+        title_el.text = county_name_case + '\n'  + str(int(notownerocc)) + ' not owner-occupied,\n'+ str(int(ownerocc)) + ' owner-occupied.'
+        county_path.append(title_el)
 county_group.extend(children)
 tree.write('mortgageMap.svg')
 
